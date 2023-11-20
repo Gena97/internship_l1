@@ -34,7 +34,7 @@ func senderData(ch chan int) {
 	for i := 1; ; i++ {
 		ch <- i
 		fmt.Printf("Отправлено значение: %d\n", i)
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(20 * time.Millisecond)
 	}
 }
 
