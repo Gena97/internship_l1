@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	var v interface{}
+	var v any
 
 	v = 1337
 	fmt.Printf("Тип переменной: %s\n", getType(v))
@@ -24,6 +24,6 @@ func main() {
 	fmt.Printf("Тип переменной: %s\n", getType(v))
 }
 
-func getType(v interface{}) string {
+func getType(v any) string {
 	return reflect.TypeOf(v).String()
 }
