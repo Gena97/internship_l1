@@ -1,4 +1,4 @@
-// 6. Реализовать все возможные способы остановки выполнения горутины.
+// Реализовать все возможные способы остановки выполнения горутины.
 
 package main
 
@@ -10,63 +10,101 @@ import (
 )
 
 func main() {
-	// Пример 1: использование канала для остановки горутины
-	quitChan := make(chan struct{})
-	go testGoroutineQuit(quitChan)
+	stopGoroutine1()
+	stopGoroutine2()
+	stopGoroutine3()
+}
 
-	time.Sleep(time.Second * 10)
-	close(quitChan) // закрываем канал
-	fmt.Println("Горутина 1 завершает работу")
-	time.Sleep(time.Second * 5)
+// Остановка горутины путем отправки сигнала в канал.
+func stopGoroutine1() {
+	quitChan := make(chan bool)
+	go func() {
+		for {
+			select {
+			case <-quitChan:
+				return
+			default:
+				// Вывод сообщения каждые 3 секунды
+				fmt.Println("Это тестовая горутина 1")
+				time.Sleep(time.Second * 3)
+			}
+		}
+	}()
 
-	// Пример 2: использование sync.WaitGroup
+	// Задержка для вывода некоторых сообщений из горутины
+	time.Sleep(time.Second * 8)
+
+	// Остановка горутины
+	quitChan <- true
+	fmt.Println("Горутина 1 остановлена!")
+
+	// Проверка, остановилась ли горутина
+	fmt.Println("Это конец функции 1")
+
+	time.Sleep(time.Second * 4)
+}
+
+// Закрытие горутины путем закрытия канала.
+func stopGoroutine2() {
 	var wg sync.WaitGroup
 	wg.Add(1)
-	go testGoroutineWaitGroup(&wg)
-	time.Sleep(time.Second * 2)
-	wg.Done() // сигнализируем о завершении горутины
-	fmt.Println("Горутина 2 завершает работу")
-	time.Sleep(time.Second * 5)
 
-	// Пример 3: использование контекста для управления горутиной
+	strChan := make(chan string)
+	go func() {
+		for {
+			element, ok := <-strChan
+			// Проверка, закрыт ли канал
+			if !ok {
+				println("Горутина 2 остановлена!")
+				wg.Done()
+				return
+			}
+			println(element)
+		}
+	}()
+	strChan <- "это"
+	strChan <- "тестовая"
+	strChan <- "строка"
+	strChan <- "сообщения"
+	close(strChan)
+
+	// Ожидание остановки всех горутин
+	wg.Wait()
+	// Вывод последнего сообщения
+	fmt.Println("Это конец функции 2!")
+	time.Sleep(time.Second * 4)
+}
+
+// Закрытие горутины путем отмены контекста.
+func stopGoroutine3() {
+	// Канал для бесконечного выполнения горутины
+	channel := make(chan struct{})
 	ctx, cancel := context.WithCancel(context.Background())
-	go testGoroutineContext(ctx)
-	time.Sleep(time.Second * 5)
-	cancel() // отменяем контекст
-	time.Sleep(time.Second * 2)
-	fmt.Println("Горутина 3 завершает работу")
-}
 
-func testGoroutineQuit(quitChan <-chan struct{}) {
-	for {
-		select {
-		case <-quitChan:
-			fmt.Println("Получен сигнал завершения горутины 1")
-			return
-		default:
-			fmt.Println("Это testGoroutineQuit")
-			time.Sleep(time.Second * 3)
+	go func(ctx context.Context) {
+		for {
+			select {
+			case <-ctx.Done(): // Если выполнен cancel()
+				channel <- struct{}{}
+				fmt.Println("В горутине получен сигнал закрытия контекста")
+				return
+			default:
+				fmt.Println("Это из горутины 3")
+			}
+
+			// Вывод сообщения каждую секунду
+			time.Sleep(1 * time.Second)
 		}
-	}
-}
+	}(ctx)
 
-func testGoroutineWaitGroup(wg *sync.WaitGroup) {
-	defer wg.Done()
-	for {
-		fmt.Println("Это testGoroutineWaitGroup")
-		time.Sleep(time.Second * 3)
-	}
-}
+	// Горутина для закрытия вышеуказанного контекста
+	go func() {
+		time.Sleep(5 * time.Second)
+		// Закрытие контекста
+		cancel()
+	}()
 
-func testGoroutineContext(ctx context.Context) {
-	for {
-		select {
-		case <-ctx.Done():
-			fmt.Println("Произошла отмена контекста горутины 3")
-			return
-		default:
-			fmt.Println("Это testGoroutineContext")
-			time.Sleep(time.Second * 3)
-		}
-	}
+	// Бесконечное выполнение горутины
+	<-channel
+	fmt.Println("Это конец функции 3")
 }
