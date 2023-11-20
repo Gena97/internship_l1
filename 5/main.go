@@ -17,7 +17,9 @@ func main() {
 	dataChannel := make(chan int)
 
 	// Запускаем горутину для отправки значений в канал
-	go sendData(dataChannel)
+	go receiverData(dataChannel)
+
+	go senderData(dataChannel)
 
 	// Ждем N секунд
 	time.Sleep(N * time.Second)
@@ -25,19 +27,26 @@ func main() {
 	// Закрываем канал после N секунд
 	close(dataChannel)
 
-	fmt.Println("Главная горутина завершает работу")
+	fmt.Println("Завершение работы")
 }
 
-func sendData(ch chan int) {
+func senderData(ch chan int) {
 	for i := 1; ; i++ {
-		// Отправляем значение в канал
+		ch <- i
+		fmt.Printf("Отправлено значение: %d\n", i)
+		time.Sleep(10 * time.Millisecond)
+	}
+}
+
+func receiverData(ch chan int) {
+	for {
 		select {
-		case ch <- i:
-			fmt.Printf("Отправлено значение: %d\n", i)
-		case <-time.After(1 * time.Second):
-			// Выход из цикла, если канал закрыт
-			fmt.Println("Канал закрыт. Остановка sendData.")
-			return
+		case data, ok := <-ch:
+			if !ok {
+				fmt.Println("Канал закрыт")
+				return
+			}
+			fmt.Println("Получено значение:", data)
 		}
 	}
 }
