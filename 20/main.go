@@ -9,26 +9,17 @@ import (
 )
 
 func reverseWords(s string) string {
-	words := strings.Fields(s) // Разделение строки на слова
-	reversed := make([]string, len(words))
+	words := strings.Split(s, " ")
 
-	for i := 0; i < len(words); i++ {
-		reversed[i] = reverseString(words[i]) // Переворачиваем каждое слово
+	for i, j := 0, len(words)-1; i < j; i, j = i+1, j-1 {
+		words[i], words[j] = words[j], words[i]
 	}
 
-	return strings.Join(reversed, " ") // Объединяем слова обратно в строку
-}
-
-func reverseString(s string) string {
-	runes := []rune(s)
-	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-		runes[i], runes[j] = runes[j], runes[i] // Переворачиваем строку
-	}
-	return string(runes)
+	return strings.Join(words, " ")
 }
 
 func main() {
-	input := "snow dog sun - sun dog snow"
-	output := reverseWords(input)
-	fmt.Println(output)
+	s := "snow dog sun - sun dog snow"
+	reversed := reverseWords(s)
+	fmt.Println(reversed)
 }
