@@ -1,4 +1,4 @@
-// Дана последовательность чисел: 2,4,6,8,10.
+// 3. Дана последовательность чисел: 2,4,6,8,10.
 // Найти сумму их квадратов(22+32+42….) с использованием конкурентных вычислений.
 
 package main
@@ -6,20 +6,17 @@ package main
 import (
 	"fmt"
 	"sync"
+	"sync/atomic"
 )
 
-var mu sync.Mutex // Мьютекс для безопасной работы с общей суммой
-
-var totalSum int // Общая сумма квадратов
+var totalSum int64 // Общая сумма квадратов
 
 func calculateAndSumSquare(number int, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	square := number * number
+	square := int64(number * number)
 
-	mu.Lock()
-	totalSum += square // Добавляем квадрат числа к общей сумме
-	mu.Unlock()
+	atomic.AddInt64(&totalSum, square) // Добавляем квадрат числа к общей сумме
 }
 
 func main() {

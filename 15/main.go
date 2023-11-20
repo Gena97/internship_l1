@@ -1,4 +1,4 @@
-/* К каким негативным последствиям может привести данный фрагмент кода, и как это исправить? Приведите корректный пример реализации.
+/* 15. К каким негативным последствиям может привести данный фрагмент кода, и как это исправить? Приведите корректный пример реализации.
 
 var justString string
 func someFunc() {
@@ -15,7 +15,10 @@ func main() {
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 var justString string
 
@@ -33,9 +36,12 @@ func main() {
 }
 
 func createHugeString(size int) string {
-	str := ""
+	var builder strings.Builder
+	builder.Grow(size) // Выделение памяти под строку заранее
+
 	for i := 0; i < size; i++ {
-		str += "x"
+		builder.WriteString("x") // Добавление символов к строке
 	}
-	return str
+
+	return builder.String() // Получение результирующей строки
 }

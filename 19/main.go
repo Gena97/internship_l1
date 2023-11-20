@@ -1,5 +1,5 @@
-// 19. Разработать программу, которая переворачивает подаваемую на ход строку
-// (например: «главрыба — абырвалг»). Символы могут быть unicode.
+// 20. Разработать программу, которая переворачивает слова в строке.
+// Пример: «snow dog sun — sun dog snow».
 
 package main
 
@@ -8,23 +8,31 @@ import (
 	"strings"
 )
 
-func reverseString(inputStr string) string {
-	// Разбиваем строку на массив символов
-	charArray := strings.Split(inputStr, "")
+func main() {
+	str := "главрыба — абырвалг"
+	reversed := reverseString1(str)
+	fmt.Println(reversed)
 
-	// Переворачиваем массив символов
-	for i := 0; i < len(charArray)/2; i++ {
-		charArray[i], charArray[len(charArray)-1-i] = charArray[len(charArray)-1-i], charArray[i]
-	}
-
-	// Объединяем символы обратно в строку
-	reversedStr := strings.Join(charArray, "")
-
-	return reversedStr
+	reversed = reverseString2(str)
+	fmt.Println(reversed)
 }
 
-func main() {
-	inputStr := "главрыба — абырвалг"
-	reversedStr := reverseString(inputStr)
-	fmt.Println(reversedStr)
+func reverseString1(str string) string {
+	var reversedBuilder strings.Builder
+	// Разбиваем строку на руны (unicode символы)
+	runes := []rune(str)
+	// Проходим по рунам в обратном порядке и добавляем их в Builder
+	for i := len(runes) - 1; i >= 0; i-- {
+		reversedBuilder.WriteRune(runes[i])
+	}
+	return reversedBuilder.String()
+}
+
+func reverseString2(str string) string {
+	runes := []rune(str)
+	reversed := make([]rune, len(runes))
+	for i := len(runes) - 1; i >= 0; i-- {
+		reversed[len(runes)-1-i] = runes[i]
+	}
+	return string(reversed)
 }

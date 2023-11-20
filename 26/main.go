@@ -5,17 +5,24 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func main() {
 
-	checker("abcd")
-	checker("abCdefAaf")
-	checker("aabcd")
+	checker1("abcd")
+	checker1("abCdefAaf")
+	checker1("aabcd")
+
+	checker2("abcd")
+	checker2("abCdefAaf")
+	checker2("aabcd")
 
 }
 
-func checker(s string) bool {
+func checker1(s string) bool {
 	var charSet [26]bool
 
 	for _, v := range s {
@@ -29,6 +36,23 @@ func checker(s string) bool {
 			}
 			charSet[v-'A'] = true
 		}
+	}
+
+	fmt.Println("Строка уникальна")
+	return true
+}
+
+func checker2(s string) bool {
+	s = strings.ToLower(s) // Приведение всех символов строки к нижнему регистру
+
+	charSet := make(map[rune]bool)
+
+	for _, v := range s {
+		if charSet[v] {
+			fmt.Println("Строка неуникальна")
+			return false
+		}
+		charSet[v] = true
 	}
 
 	fmt.Println("Строка уникальна")
