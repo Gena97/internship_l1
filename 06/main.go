@@ -11,7 +11,11 @@ import (
 
 func main() {
 	stopGoroutine1()
+	time.Sleep(time.Second * 4)
+
 	stopGoroutine2()
+	time.Sleep(time.Second * 4)
+
 	stopGoroutine3()
 }
 
@@ -40,8 +44,6 @@ func stopGoroutine1() {
 
 	// Проверка, остановилась ли горутина
 	fmt.Println("Это конец функции 1")
-
-	time.Sleep(time.Second * 4)
 }
 
 // Закрытие горутины путем закрытия канала.
@@ -72,7 +74,6 @@ func stopGoroutine2() {
 	wg.Wait()
 	// Вывод последнего сообщения
 	fmt.Println("Это конец функции 2!")
-	time.Sleep(time.Second * 4)
 }
 
 // Закрытие горутины путем отмены контекста.

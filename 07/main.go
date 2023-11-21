@@ -1,3 +1,5 @@
+// 7. Реализовать конкурентную запись данных в map.
+
 package main
 
 import (
@@ -29,10 +31,11 @@ func (sn *SafeNumbers) Get(num int) (int, error) {
 	return 0, errors.New("Number does not exist")
 }
 
-func addNumbersMap(sn *SafeNumbers, amount int, wg *sync.WaitGroup) {
+func addNumbersMap(sn *SafeNumbers, amount, id int, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for i := 0; i < amount; i++ {
 		sn.Add(i)
+		fmt.Printf("В горутине %d по ключу %d записано %d\n", id, i, i)
 	}
 }
 
@@ -44,8 +47,8 @@ func main() {
 	var wg sync.WaitGroup
 
 	wg.Add(2)
-	go addNumbersMap(safeNumbers, 100, &wg)
-	go addNumbersMap(safeNumbers, 300, &wg)
+	go addNumbersMap(safeNumbers, 100, 1, &wg)
+	go addNumbersMap(safeNumbers, 100, 2, &wg)
 
 	wg.Wait()
 

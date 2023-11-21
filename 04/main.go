@@ -40,10 +40,11 @@ func main() {
 	}()
 
 	// Генерация произвольных данных и отправка их в канал
+Loop:
 	for i := 1; ; i++ {
 		select {
 		case <-done:
-			break
+			break Loop // Переходим к метке Loop и завершаем цикл
 		default:
 			data := fmt.Sprintf("Data %d", i)
 			dataChannel <- data
@@ -64,7 +65,7 @@ func worker(id int, dataChannel <-chan string, wg *sync.WaitGroup, done <-chan s
 		case data, ok := <-dataChannel:
 			if !ok {
 				// Канал закрыт, завершаем работу воркера
-				fmt.Printf("Воркер %d завершает работу.\n", id)
+				fmt.Printf("Канал закрыт. Воркер %d завершает работу.\n", id)
 				return
 			}
 			fmt.Printf("Воркер %d получил: %s\n", id, data)

@@ -25,7 +25,7 @@ func quicksort(a []int) []int {
 
 	a[pivot], a[right] = a[right], a[pivot]
 
-	for i, _ := range a {
+	for i := 0; i < len(a); i++ {
 		if a[i] < a[right] {
 			a[left], a[i] = a[i], a[left]
 			left++

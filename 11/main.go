@@ -5,8 +5,8 @@ package main
 import "fmt"
 
 func main() {
-	set1 := []int{1, 2, 2, 3, 4, 4, 5}
-	set2 := []int{2, 3, 4, 4, 5, 6, 7, 8}
+	set1 := []int{1, 2, 2, 3, 4, 4, 5, 5}
+	set2 := []int{2, 3, 4, 4, 5, 6, 7, 8, 5}
 
 	intersection := make([]int, 0)
 	set1Count := make(map[int]int)
